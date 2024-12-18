@@ -1,0 +1,18 @@
+
+  [ 0 over
+    [ 10 /mod 
+      rot 10 * +
+      swap 
+      dup 0 = until ]
+    drop = ]          is palindromic ( n --> b )
+
+  []
+  1000 times
+    [ i^ 
+       dup times 
+        [ dup i^ * dup
+          palindromic iff
+            [ rot join swap ]
+          else drop ] 
+      drop ]
+  sort -1 peek echo 

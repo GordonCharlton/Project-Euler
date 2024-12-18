@@ -1,0 +1,9 @@
+
+  0 temp put
+  1 2 
+  [ dup 1 & not if 
+      [ dup temp tally ]
+    tuck + 
+    dup 4000000 > until ]
+  2drop
+  temp share

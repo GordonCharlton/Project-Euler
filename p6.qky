@@ -1,0 +1,12 @@
+
+  0
+  100 times 
+    [ i 1+ + ]
+  dup *
+  0
+  100 times 
+    [ i 1+ dup * + ]
+  -
+  echo
+
+  

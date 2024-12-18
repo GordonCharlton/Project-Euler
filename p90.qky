@@ -1,0 +1,114 @@
+(          Project Euler problem 90: Cube Digit Pairs          )
+
+( Notes 
+  Method: Generate all possible pairs of dice.
+
+            1. I already have code from rosettacode to generate 
+               a suitable nest of all 120 combinations. That's
+               "comb" and the definitions preceding it.
+            2. Use this to generate all (120*119)/2 pairs.
+
+          Filter out pairs that can't make 1 4 9 16 25 64 & 81.
+
+            1. Order of dice is not important - if we have 
+               5 and 2, or 2 and 5 we can make 25. So 
+               "pairvalue" always makes the smaller value. 
+            2. Therefore we need to check for 18 rather than 81.
+            3. 6 <=> 9. So we need to check for e.g. 16 AND 19.
+            4. But! 49 and 64 both require a 4 and either 
+               a 6 or a 9, so checking for 46 and 49 suffices.
+            5. I initially had code to filter out pairs of dice
+               that only differed by the 6s and 9s, but it
+               didn't affect the final result, so I removed it.
+            6. "require" is just a bit of meta-word trickery to 
+               make "valid" super-clean. It's a task specific
+               "switch" in C or "cond" in LISP, essentially. 
+
+          Count how many remain.
+
+            1. "valid" returns a boolean, but booleans are just
+               0 and 1, so just adding that to a running total 
+               is fine. No need for an "if". 
+                                                               )
+
+  [ 0 swap
+    [ dup 0 != while
+      dup 1 & if
+        [ dip 1+ ]
+      1 >> again ]
+    drop ]                      is bits        (     n --> n   )
+
+  [ [] unrot
+    bit times
+      [ i bits
+        over = if
+          [ dip
+              [ i join ] ] ]
+    drop ]                      is combnums    (   n n --> [   )
+
+  [ [] 0 rot
+    [ dup 0 != while
+      dup 1 & if
+        [ dip
+            [ dup dip join ] ]
+       dip 1+
+       1 >>
+       again ]
+    2drop ]                     is makecomb    (     n --> [   )
+
+  [ over 0 = iff
+      [ 2drop [] ] done
+    combnums
+    [] swap witheach
+       [ makecomb
+         nested join ] ]        is comb        (   n n --> [   )
+
+  [ [] temp put
+    6 10 comb dup
+    witheach
+      [ dip [ behead drop ]
+        over witheach
+         [ over nested
+           swap nested join
+           nested temp gather ]
+        drop ]
+    drop temp take ]            is allpairs    (       --> [   )
+
+  [ 2dup < if swap 10 * + ]     is pairvalue   (   n n --> n   )
+
+  [ [] temp put
+    unpack
+    witheach
+      [ over witheach
+          [ over pairvalue
+            temp gather ]
+        drop ]
+    drop
+    temp take ]                 is makevalues  (   [ [ --> [   )
+
+  [ over find swap found ]      is has         (   [ n --> b   )
+
+  [ not iff [ drop false ]
+            ]done[ ]            is require     ( b [ b --> b [ )
+
+  [ dup   1 has    require
+    dup   4 has    require
+    dup   6 has
+    over  9 has or require
+    dup  16 has
+    over 19 has or require
+    dup  25 has    require
+    dup  36 has
+    over 39 has or require
+    dup  46 has
+    over 49 has or require
+    dup  18 has    require
+    drop true ]                 is valid      (     [ --> b   )
+
+  [ 0 swap witheach
+      [ makevalues valid + ] ]  is countvalid (     [ --> n   )
+
+  [ allpairs countvalid echo ]  is euler90    (      -->      )
+
+euler90 ( I found a github repository of the answers,
+         so I know it's correct. :-) )
