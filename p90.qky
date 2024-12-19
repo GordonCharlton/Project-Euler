@@ -5,8 +5,7 @@
 
             1. I already have code from rosettacode to generate 
                a suitable nest of all 120 combinations. That's
-               "comb" and the definitions preceding it.
-            2. Use this to generate all (120*119)/2 pairs.
+               "comb".
 
           Filter out pairs that can't make 1 4 9 16 25 64 & 81.
 
@@ -31,37 +30,24 @@
                is fine. No need for an "if". 
                                                                )
 
-  [ 0 swap
-    [ dup 0 != while
-      dup 1 & if
-        [ dip 1+ ]
-      1 >> again ]
-    drop ]                      is bits        (     n --> n   )
-
-  [ [] unrot
-    bit times
-      [ i bits
-        over = if
-          [ dip
-              [ i join ] ] ]
-    drop ]                      is combnums    (   n n --> [   )
-
-  [ [] 0 rot
-    [ dup 0 != while
-      dup 1 & if
-        [ dip
-            [ dup dip join ] ]
-       dip 1+
-       1 >>
-       again ]
-    2drop ]                     is makecomb    (     n --> [   )
-
   [ over 0 = iff
       [ 2drop [] ] done
-    combnums
-    [] swap witheach
-       [ makecomb
-         nested join ] ]        is comb        (   n n --> [   )
+    [] swap times [ i^ join ]
+    [ over 1 = iff
+        [ nip [] swap witheach
+            [ nested 
+              nested join ] ]
+        done
+      2dup size = iff
+        [ nip nested ]
+        done
+      behead temp put
+      over 1 - over recurse
+      [] swap witheach
+         [ temp share swap join
+           nested join ]
+      temp release
+      unrot recurse join ] ]    is comb        (   n n --> [   )
 
   [ [] temp put
     6 10 comb dup
