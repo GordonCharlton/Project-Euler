@@ -4,8 +4,8 @@
   Method: Generate all possible pairs of dice.
 
             1. I already have code from rosettacode to generate 
-               a suitable nest of all 120 combinations. That's
-               "comb".
+               a suitable nest of all the combinations on one
+               die, and all pairings of two dice. That's "comb".
 
           Filter out pairs that can't make 1 4 9 16 25 64 & 81.
 
@@ -27,40 +27,24 @@
 
             1. "valid" returns a boolean, but booleans are just
                0 and 1, so just adding that to a running total 
-               is fine. No need for an "if". 
-                                                               )
+               is fine. No need for an "if".                   )
 
-  [ over 0 = iff
-      [ 2drop [] ] done
-    [] swap times [ i^ join ]
-    [ over 1 = iff
-        [ nip [] swap witheach
-            [ nested 
-              nested join ] ]
-        done
-      2dup size = iff
-        [ nip nested ]
-        done
-      behead temp put
-      over 1 - over recurse
-      [] swap witheach
-         [ temp share swap join
-           nested join ]
-      temp release
-      unrot recurse join ] ]    is comb        (   n n --> [   )
+  [ over 1 = iff
+      [ nip [] swap witheach
+          [ nested nested join ] ]
+      done
+    2dup size = iff
+      [ nip nested ] 
+      done
+    1 split swap temp put
+    over 1 - over recurse
+    [] swap witheach
+       [ temp share swap join
+         nested join ]
+    temp release
+    unrot recurse join ]           is comb       (   n [ --> [   )
 
-  [ [] temp put
-    6 10 comb dup
-    witheach
-      [ dip [ behead drop ]
-        over witheach
-         [ over nested
-           swap nested join
-           nested temp gather ]
-        drop ]
-    drop temp take ]            is allpairs    (       --> [   )
-
-  [ 2dup < if swap 10 * + ]     is pairvalue   (   n n --> n   )
+  [ 2dup < if swap 10 * + ]        is pairvalue  (   n n --> n   )
 
   [ [] temp put
     unpack
@@ -70,12 +54,12 @@
             temp gather ]
         drop ]
     drop
-    temp take ]                 is makevalues  (   [ [ --> [   )
+    temp take ]                    is makevalues (     [ --> [   )
 
-  [ over find swap found ]      is has         (   [ n --> b   )
+  [ over find swap found ]         is has        (   [ n --> b   )
 
   [ not iff [ drop false ]
-            ]done[ ]            is require     ( b [ b --> b [ )
+            ]done[ ]               is require    ( b [ b --> b [ )
 
   [ dup   1 has    require
     dup   4 has    require
@@ -89,12 +73,13 @@
     dup  46 has
     over 49 has or require
     dup  18 has    require
-    drop true ]                 is valid      (     [ --> b   )
+    drop true ]                    is valid      (     [ --> b   )
 
   [ 0 swap witheach
-      [ makevalues valid + ] ]  is countvalid (     [ --> n   )
+      [ makevalues valid + ] ]     is countvalid (     [ --> n   )
 
-  [ allpairs countvalid echo ]  is euler90    (      -->      )
+  [ 2 6 ' [ 0 1 2 3 4 5 6 7 8 9 ]
+    comb comb countvalid echo ]    is euler90    (       -->     )
 
 euler90 ( I found a github repository of the answers,
           so I know it's correct. :-) )
