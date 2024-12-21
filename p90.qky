@@ -28,22 +28,19 @@
                0 and 1, so just adding that to a running total
                is fine. No need for an "if".                   )
 
-  [ over 1 = iff
-      [ nip [] swap witheach
-          [ nested nested join ] ]
+  [ over 0 = iff
+      [ 2drop ' [ [ ] ] ]
       done
-    2dup size = iff
-      [ nip nested ]
-      done
-    1 split swap temp put
-    over 1 - over recurse
-    [] swap witheach
-       [ temp share swap join
-         nested join ]
-    temp release
-    unrot recurse join ]           is comb       ( n [ --> [ )
+    dup [] = iff nip done
+    1 split rot tuck
+    1 - over recurse
+    dip [ rot [] ]
+    witheach
+      [ dip over join
+        nested join ]
+    nip unrot recurse join ]   is comb       ( n [ --> [ )
 
-  [ 2dup < if swap 10 * + ]        is pairvalue  ( n n --> n )
+  [ 2dup < if swap 10 * + ]    is pairvalue  ( n n --> n )
 
   [ [] temp put
     unpack
@@ -53,11 +50,11 @@
             temp gather ]
         drop ]
     drop
-    temp take ]                    is makevalues (   [ --> [ )
+    temp take ]                is makevalues (   [ --> [ )
 
-  [ over find swap found ]         is has        ( [ n --> b )
+  [ over find swap found ]     is has        ( [ n --> b )
 
-  [ not iff false ]done[ ]         is require    (   b --> b )
+  [ not iff false ]done[ ]     is require    (   b --> b )
 
   [ [ dup   1 has    require
       dup   4 has    require
@@ -71,10 +68,10 @@
       dup  46 has
       over 49 has or require
       dup  18 has    require
-      true ] nip ]                 is valid      (   [ --> b )
+      true ] nip ]             is valid      (   [ --> b )
 
   [ 0 swap witheach
-      [ makevalues valid + ] ]     is countvalid (   [ --> n )
+      [ makevalues valid + ] ] is countvalid (   [ --> n )
 
   2 6 ' [ 0 1 2 3 4 5 6 7 8 9 ]
   comb comb countvalid echo
